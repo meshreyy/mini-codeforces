@@ -24,7 +24,8 @@ export function ContestCard({title, id, startTime, endTime}) {
           {status}
         </span>
       </div>
-      <p className="text-gray-500 text-sm mb-2">Starts: {new Date(startTime).toLocaleString()}</p>
+      <p className="text-gray-500 text-sm mb-2">Starts: {new Date(startTime).toUTCString()
+}</p>
       <p className="text-gray-500 text-sm mb-4">Duration: {durationHours}h {durationMinutes}min</p>
       <Link href={`/contests/${id}`} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         Participate
