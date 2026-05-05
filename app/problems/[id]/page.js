@@ -23,7 +23,7 @@ export default async function ProblemPage({ params }) {
         </div>
       </div>
 
-      {/* Right side - Code editor */}
+     
       <div className="w-1/2 overflow-y-auto p-8">
         <SubmitSection problemId={problem.id} />
       </div>
