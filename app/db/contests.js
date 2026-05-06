@@ -46,3 +46,16 @@ export async function getContestProblems(contestId) {
   return data
 }
 
+export async function getContestLeaderboard(contestId) {
+  const { data, error } = await supabase
+    .from("leaderboard")
+    .select("*, users(username)")
+    .eq("contest_id", contestId)
+    .order("score", { ascending: false })
+    .order("last_solved_at", { ascending: true })
+
+  if (error) throw error
+  return data
+}
+
+

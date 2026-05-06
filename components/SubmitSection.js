@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { CodeEditor } from "./CodeEditor"
 
-export function SubmitSection({ problemId }) {
+export function SubmitSection({ problemId, contestId = null }) {
   const [code, setCode] = useState(`#include <iostream>
 using namespace std;
 int main() {
@@ -20,7 +20,7 @@ int main() {
     const res = await fetch("/api/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, problemId })
+      body: JSON.stringify({ code, problemId, contestId })
     })
     const result = await res.json()
     setTestResults(result.testResults)
@@ -41,7 +41,6 @@ int main() {
 
   return (
     <div>
-      {/* Tabs */}
       <div className="flex border-b mb-4">
         <button
           onClick={() => handleTabChange("submit")}
@@ -57,7 +56,6 @@ int main() {
         </button>
       </div>
 
-      {/* Submit Tab */}
       {activeTab === "submit" && (
         <div>
           <CodeEditor code={code} onChange={setCode} />
@@ -86,7 +84,6 @@ int main() {
         </div>
       )}
 
-      {/* Submissions Tab */}
       {activeTab === "submissions" && (
         <div>
           {submissions.length === 0 ? (

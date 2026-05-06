@@ -4,8 +4,9 @@ import fs from "fs"
 import path from "path"
 import { SubmitSection } from "@/components/SubmitSection"
 
-export default async function ProblemPage({ params }) {
+export default async function ProblemPage({ params, searchParams }) {
   const { id } = await params
+  const { contestId } = await searchParams
   const problem = await getProblemById(id)
 
   const filePath = path.join(process.cwd(), problem.description)
@@ -23,8 +24,7 @@ export default async function ProblemPage({ params }) {
       </div>
 
       <div className="w-1/2 overflow-y-auto p-8">
-        <SubmitSection problemId={problem.id} />
-        
+        <SubmitSection problemId={problem.id} contestId={contestId || null} />
       </div>
     </div>
   )

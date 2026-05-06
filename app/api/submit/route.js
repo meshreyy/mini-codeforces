@@ -8,11 +8,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions)
-    console.log("SESSION:", session)
-
     if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { code, problemId } = await req.json()
+    const { code, problemId, contestId } = await req.json()
     const problem = await getProblemById(problemId)
 
     const inputsDir = path.join(process.cwd(), problem.testcase_folder, "inputs")
@@ -56,14 +54,34 @@ export async function POST(req) {
       .single()
 
     const { error: insertError } = await supabase.from("submissions").insert([{
-  user_id: userData.id,
-  problem_id: problemId,
-  result: finalVerdict.toLowerCase(),
-  tests_passed: testsPassed
-}])
-
+      user_id: userData.id,
+      problem_id: problemId,
+      contest_id: contestId || null,
+      result: finalVerdict.toLowerCase(),
+      tests_passed: testsPassed
+    }])
 
     console.log("INSERT ERROR:", insertError)
+
+    if (finalVerdict === "AC" && contestId) {
+      const { data: existing } = await supabase
+        .from("leaderboard")
+        .select("*")
+        .eq("contest_id", contestId)
+        .eq("user_id", userData.id)
+        .single()
+
+      if (existing) {
+        await supabase
+          .from("leaderboard")
+          .update({ score: existing.score + 100, last_solved_at: new Date().toISOString() })
+          .eq("id", existing.id)
+      } else {
+        await supabase
+          .from("leaderboard")
+          .insert([{ contest_id: contestId, user_id: userData.id, score: 100, last_solved_at: new Date().toISOString() }])
+      }
+    }
 
     return Response.json({ verdict: finalVerdict, testsPassed, total: inputFiles.length, testResults })
 
