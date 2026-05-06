@@ -12,6 +12,8 @@ int main() {
   const [testResults, setTestResults] = useState([])
   const [verdict, setVerdict] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("submit")
+  const [submissions, setSubmissions] = useState([])
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -26,30 +28,93 @@ int main() {
     setLoading(false)
   }
 
-  return (
-    <div className="mt-8">
-      <h2 className="text-xl font-bold mb-4">Submit Solution</h2>
-      <CodeEditor code={code} onChange={setCode} />
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {loading ? "Judging..." : "Submit"}
-      </button>
+  const loadSubmissions = async () => {
+    const res = await fetch(`/api/submissions?problemId=${problemId}`)
+    const data = await res.json()
+    setSubmissions(data)
+  }
 
-      {verdict && (
-        <div className="mt-4">
-          <p className={`text-lg font-bold mb-3 ${verdict === "AC" ? "text-green-600" : "text-red-600"}`}>
-            Verdict: {verdict}
-          </p>
-          <div className="flex gap-3">
-            {testResults.map((t) => (
-              <div key={t.id} className={`px-4 py-2 rounded border text-sm font-medium ${t.passed ? "bg-green-100 border-green-400 text-green-700" : "bg-red-100 border-red-400 text-red-700"}`}>
-                {t.passed ? "✅" : "❌"} Test Case {t.id}
+  const handleTabChange = (tab) => {
+    setActiveTab(tab)
+    if (tab === "submissions") loadSubmissions()
+  }
+
+  return (
+    <div>
+      {/* Tabs */}
+      <div className="flex border-b mb-4">
+        <button
+          onClick={() => handleTabChange("submit")}
+          className={`px-6 py-2 font-medium ${activeTab === "submit" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500 hover:text-blue-600"}`}
+        >
+          Submit
+        </button>
+        <button
+          onClick={() => handleTabChange("submissions")}
+          className={`px-6 py-2 font-medium ${activeTab === "submissions" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500 hover:text-blue-600"}`}
+        >
+          Submissions
+        </button>
+      </div>
+
+      {/* Submit Tab */}
+      {activeTab === "submit" && (
+        <div>
+          <CodeEditor code={code} onChange={setCode} />
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loading ? "Judging..." : "Submit"}
+          </button>
+
+          {verdict && (
+            <div className="mt-4">
+              <p className={`text-lg font-bold mb-3 ${verdict === "AC" ? "text-green-600" : "text-red-600"}`}>
+                Verdict: {verdict}
+              </p>
+              <div className="flex gap-3">
+                {testResults.map((t) => (
+                  <div key={t.id} className={`px-4 py-2 rounded border text-sm font-medium ${t.passed ? "bg-green-100 border-green-400 text-green-700" : "bg-red-100 border-red-400 text-red-700"}`}>
+                    {t.passed ? "✅" : "❌"} Test Case {t.id}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Submissions Tab */}
+      {activeTab === "submissions" && (
+        <div>
+          {submissions.length === 0 ? (
+            <p className="text-gray-500">No submissions yet.</p>
+          ) : (
+            <table className="w-full border rounded-lg overflow-hidden text-sm">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 text-left">ID</th>
+                  <th className="px-4 py-2 text-left">Result</th>
+                  <th className="px-4 py-2 text-left">Tests Passed</th>
+                  <th className="px-4 py-2 text-left">Time</th>
+                  <th className="px-4 py-2 text-left">Memory</th>
+                </tr>
+              </thead>
+              <tbody>
+                {submissions.map((s) => (
+                  <tr key={s.id} className="border-t">
+                    <td className="px-4 py-2 text-gray-500">{s.id.slice(0, 8)}...</td>
+                    <td className="px-4 py-2">{s.result === "ac" ? "✅" : "❌"} {s.result.toUpperCase()}</td>
+                    <td className="px-4 py-2">{s.tests_passed ?? "-"}</td>
+                    <td className="px-4 py-2">{s.time ?? "-"}</td>
+                    <td className="px-4 py-2">{s.memory ?? "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>

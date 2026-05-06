@@ -24,6 +24,19 @@ export async function getProblemById(id) {
     return data
 }
 
+export async function getSubmissionsByProblem(problemId, userId) {
+  const { data, error } = await supabase
+    .from("submissions")
+    .select("*")
+    .eq("problem_id", problemId)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+
+  if (error) throw error
+  return data
+}
+
+
 
 
 

@@ -13,7 +13,6 @@ export default async function ProblemPage({ params }) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Left side - Problem statement */}
       <div className="w-1/2 overflow-y-auto p-8 border-r">
         <h1 className="text-3xl font-bold mb-4">{problem.name}</h1>
         <p className="text-gray-500 mb-2">Difficulty: {problem.difficulty_level}</p>
@@ -23,9 +22,9 @@ export default async function ProblemPage({ params }) {
         </div>
       </div>
 
-     
       <div className="w-1/2 overflow-y-auto p-8">
         <SubmitSection problemId={problem.id} />
+        
       </div>
     </div>
   )
