@@ -13,8 +13,8 @@ export default async function ProblemPage({ params, searchParams }) {
   const content = fs.readFileSync(filePath, "utf-8")
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <div className="w-1/2 overflow-y-auto p-8 border-r">
+    <div className="flex h-[calc(100vh-76px)] overflow-hidden">
+      <div className="w-1/2 overflow-y-auto p-6 md:p-8 border-r">
         <h1 className="text-3xl font-bold mb-4">{problem.name}</h1>
         <p className="text-gray-500 mb-2">Difficulty: {problem.difficulty_level}</p>
         <p className="text-gray-500 mb-6">Time: {problem.time_limit}s | Memory: {problem.memory_limit}MB</p>
@@ -23,7 +23,7 @@ export default async function ProblemPage({ params, searchParams }) {
         </div>
       </div>
 
-      <div className="w-1/2 overflow-y-auto p-8">
+      <div className="w-1/2 overflow-y-auto p-6 md:p-8">
         <SubmitSection problemId={problem.id} contestId={contestId || null} />
       </div>
     </div>

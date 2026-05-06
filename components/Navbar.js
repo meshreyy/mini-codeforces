@@ -6,18 +6,17 @@ export function Navbar() {
   const { data: session } = useSession()
 
   return (
-    <nav className="bg-blue-900 px-8 py-4 flex items-center justify-between shadow-lg">
-      <Link href="/" className="text-2xl font-bold text-white tracking-wide">
+    <nav className="bg-blue-900 px-4 py-4 md:px-8 flex flex-wrap items-center justify-between gap-4 shadow-lg">
+      <Link href="/" className="text-xl md:text-2xl font-bold text-white tracking-wide">
         Mini Codeforces
       </Link>
 
-      <div className="flex gap-8">
+      <div className="flex flex-wrap items-center gap-4 md:gap-8">
         <Link href="/problems" className="text-white hover:text-blue-300 font-medium transition">Problems</Link>
         <Link href="/contests" className="text-white hover:text-blue-300 font-medium transition">Contests</Link>
-        <Link href="/standings" className="text-white hover:text-blue-300 font-medium transition">Standings</Link>
       </div>
 
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-wrap gap-3 md:gap-4 items-center">
         {session ? (
           <>
             <span className="text-blue-200">Hi, {session.user.name}</span>

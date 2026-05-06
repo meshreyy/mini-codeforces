@@ -10,7 +10,7 @@ export default async function ContestPage({ params }) {
   ])
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 md:px-6 py-8 md:py-10">
       <h1 className="text-3xl font-bold mb-2">{contest.name}</h1>
       <p className="text-gray-500 mb-2">Division: {contest.division}</p>
       <p className="text-gray-500 mb-6">Status: {contest.status}</p>
@@ -18,7 +18,7 @@ export default async function ContestPage({ params }) {
       <h2 className="text-2xl font-bold mb-4">Problems</h2>
       <div className="border rounded-lg overflow-hidden mb-10">
         {problems.map((cp, index) => (
-          <div key={cp.id} className="flex items-center justify-between px-6 py-4 border-b hover:bg-gray-50">
+          <div key={cp.id} className="flex items-center justify-between px-4 md:px-6 py-4 gap-3 border-b hover:bg-gray-50">
             <span className="font-medium">{String.fromCharCode(65 + index)}. {cp.problems.name}</span>
             <span className="text-gray-500">{cp.problems.difficulty_level}</span>
             <span className="text-blue-600">{cp.points} pts</span>
@@ -30,7 +30,8 @@ export default async function ContestPage({ params }) {
       </div>
 
       <h2 className="text-2xl font-bold mb-4">Standings</h2>
-      <table className="w-full border rounded-lg overflow-hidden text-sm">
+      <div className="overflow-x-auto border rounded-lg">
+      <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
             <th className="px-4 py-2 text-left">Rank</th>
@@ -54,6 +55,7 @@ export default async function ContestPage({ params }) {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
