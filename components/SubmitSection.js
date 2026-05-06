@@ -40,8 +40,8 @@ int main() {
   }
 
   return (
-    <div>
-      <div className="flex border-b mb-4">
+    <div className="pt-1">
+      <div className="flex border-b mb-5">
         <button
           onClick={() => handleTabChange("submit")}
           className={`px-6 py-2 font-medium ${activeTab === "submit" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500 hover:text-blue-600"}`}
@@ -57,22 +57,22 @@ int main() {
       </div>
 
       {activeTab === "submit" && (
-        <div>
+        <div className="space-y-4">
           <CodeEditor code={code} onChange={setCode} />
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? "Judging..." : "Submit"}
           </button>
 
           {verdict && (
-            <div className="mt-4">
+            <div className="pt-2">
               <p className={`text-lg font-bold mb-3 ${verdict === "AC" ? "text-green-600" : "text-red-600"}`}>
                 Verdict: {verdict}
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 {testResults.map((t) => (
                   <div key={t.id} className={`px-4 py-2 rounded border text-sm font-medium ${t.passed ? "bg-green-100 border-green-400 text-green-700" : "bg-red-100 border-red-400 text-red-700"}`}>
                     {t.passed ? "✅" : "❌"} Test Case {t.id}
@@ -85,11 +85,12 @@ int main() {
       )}
 
       {activeTab === "submissions" && (
-        <div>
+        <div className="pt-1">
           {submissions.length === 0 ? (
             <p className="text-gray-500">No submissions yet.</p>
           ) : (
-            <table className="w-full border rounded-lg overflow-hidden text-sm">
+            <div className="overflow-x-auto border rounded-lg">
+            <table className="w-full text-sm">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-4 py-2 text-left">ID</th>
@@ -111,6 +112,7 @@ int main() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       )}
