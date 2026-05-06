@@ -14,7 +14,6 @@ export function Navbar() {
       <div className="flex flex-wrap items-center gap-4 md:gap-8">
         <Link href="/problems" className="text-white hover:text-blue-300 font-medium transition">Problems</Link>
         <Link href="/contests" className="text-white hover:text-blue-300 font-medium transition">Contests</Link>
-        <Link href="/standings" className="text-white hover:text-blue-300 font-medium transition">Standings</Link>
       </div>
 
       <div className="flex flex-wrap gap-3 md:gap-4 items-center">
