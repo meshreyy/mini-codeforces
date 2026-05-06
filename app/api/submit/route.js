@@ -5,6 +5,60 @@ import fs from "fs"
 import path from "path"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
+async function executeCode({ code, input, timeLimit }) {
+  const executionServiceUrl = process.env.EXECUTION_SERVICE_URL
+
+  if (executionServiceUrl) {
+    const res = await fetch(`${executionServiceUrl.replace(/\/$/, "")}/execute`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, input, timeLimit })
+    })
+
+    if (!res.ok) {
+      throw new Error(`Execution service error: ${res.status}`)
+    }
+
+    return await res.json()
+  }
+
+  // Fallback for production when a dedicated execution service URL is not configured.
+  const res = await fetch("https://emkc.org/api/v2/piston/execute", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      language: "cpp",
+      version: "10.2.0",
+      files: [{ content: code }],
+      stdin: input
+    })
+  })
+
+  if (!res.ok) {
+    throw new Error(`Piston API error: ${res.status}`)
+  }
+
+  const payload = await res.json()
+  const compileStderr = payload?.compile?.stderr?.trim()
+  const run = payload?.run ?? {}
+  const runStdout = typeof run.stdout === "string" ? run.stdout : ""
+  const runStderr = typeof run.stderr === "string" ? run.stderr : ""
+
+  if (compileStderr) {
+    return { verdict: "CE", stderr: compileStderr }
+  }
+
+  if (run.signal === "SIGKILL") {
+    return { verdict: "TLE", stderr: "Time limit exceeded" }
+  }
+
+  if ((run.code ?? 0) !== 0) {
+    return { verdict: "RE", stderr: runStderr || "Runtime error" }
+  }
+
+  return { verdict: "success", stdout: runStdout }
+}
+
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions)
@@ -26,13 +80,7 @@ export async function POST(req) {
       const input = fs.readFileSync(path.join(inputsDir, file), "utf-8")
       const expected = fs.readFileSync(path.join(outputsDir, file), "utf-8").trim()
 
-      const res = await fetch("http://localhost:5000/execute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, input, timeLimit: problem.time_limit })
-      })
-
-      const result = await res.json()
+      const result = await executeCode({ code, input, timeLimit: problem.time_limit })
       let passed = false
 
       if (result.verdict === "success" && result.stdout.trim() === expected) {
